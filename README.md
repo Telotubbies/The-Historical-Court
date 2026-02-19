@@ -267,9 +267,4 @@ adk web TheHistoricalCourt
 
 ---
 
-## 9. Conclusion
 
-The Historical Court demonstrates a structured, reproducible, and well-architected multi-agent system that simulates an international tribunal process with controlled logic, balanced evidence, and formal legal reporting.
-
-Author:  
-The Historical Court Simulation Engine
