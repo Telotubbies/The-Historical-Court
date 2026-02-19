@@ -25,6 +25,7 @@ The goal is to evaluate historical topics in a balanced and reproducible manner.
 
 ## 2. Agent Architecture
 
+
 ```mermaid
 flowchart TD
 
@@ -54,6 +55,8 @@ flowchart TD
     E -->|exit_loop| F
     F --> G
     G --> H
+```
+
 3. Agent Responsibilities
 inquiry (Root Agent)
 Receives topic from user
