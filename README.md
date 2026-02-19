@@ -24,7 +24,34 @@ The goal is to evaluate historical topics in a balanced and structured manner.
 ---
 
 ## 2. Agent Architecture
+```mermaid
+flowchart TD
 
+    A[inquiry<br/>Root Agent]
+
+    subgraph SequentialAgent: court_process
+        B[LoopAgent: trial_loop]
+
+        subgraph ParallelAgent: investigation
+            C[admirer<br/>Defense]
+            D[critic<br/>Prosecution]
+        end
+
+        E[judge<br/>exit_loop required]
+
+        F[verdict_writer]
+        G[sentencing_agent]
+        H[file_writer]
+    end
+
+    A --> B
+    B --> C
+    B --> D
+    C --> E
+    D --> E
+    E -->|continue| B
+    E -->|exit_loop| F
+    F --> G --> H
 The system is composed of the following agents:
 
 ### 1. inquiry (Root Agent)
