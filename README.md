@@ -28,13 +28,12 @@ The goal is to evaluate historical topics in a balanced and reproducible manner.
 ```mermaid
 flowchart TD
 
-    A[inquiry (Root Agent)]
+    A[inquiry - Root Agent]
 
-    subgraph court_process (SequentialAgent)
+    subgraph court_process
+        B[trial_loop - LoopAgent]
 
-        B[trial_loop (LoopAgent)]
-
-        subgraph investigation (ParallelAgent)
+        subgraph investigation
             C[admirer - Defense]
             D[critic - Prosecution]
         end
@@ -44,7 +43,6 @@ flowchart TD
         F[verdict_writer]
         G[sentencing_agent]
         H[file_writer]
-
     end
 
     A --> B
