@@ -52,6 +52,7 @@ flowchart TD
     E -->|continue| B
     E -->|exit_loop| F
     F --> G --> H
+    ```
 The system is composed of the following agents:
 
 ### 1. inquiry (Root Agent)
