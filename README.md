@@ -25,7 +25,6 @@ The goal is to evaluate historical topics in a balanced and reproducible manner.
 
 ## 2. Agent Architecture
 
-
 ```mermaid
 flowchart TD
 
@@ -57,119 +56,112 @@ flowchart TD
     G --> H
 ```
 
-3. Agent Responsibilities
-inquiry (Root Agent)
-Receives topic from user
+---
 
-Stores topic in session state
+## 3. Agent Responsibilities
 
-Transfers control to court_process
+### inquiry (Root Agent)
+- Receives topic from user  
+- Stores topic in session state  
+- Transfers control to `court_process`
 
-court_process (SequentialAgent)
+### court_process (SequentialAgent)
 Enforces execution order:
-
-trial_loop
-
-verdict_writer
-
-sentencing_agent
-
-file_writer
+1. trial_loop  
+2. verdict_writer  
+3. sentencing_agent  
+4. file_writer  
 
 Guarantees deterministic stage progression.
 
-trial_loop (LoopAgent)
+### trial_loop (LoopAgent)
 Runs investigation and judicial evaluation until evidence is sufficient.
 
 Contains:
+- investigation (ParallelAgent)
+- judge (termination authority)
 
-investigation (ParallelAgent)
+Loop termination is allowed only via `exit_loop` tool.
 
-judge (termination authority)
+### investigation (ParallelAgent)
 
-Loop termination is allowed only via exit_loop tool.
+#### admirer (Defense)
+- Collects positive achievements  
+- Writes to `pos_data`
 
-investigation (ParallelAgent)
-Runs two agents simultaneously:
-
-admirer (Defense)
-Collects positive achievements
-
-Writes to pos_data
-
-critic (Prosecution)
-Collects negative findings or controversies
-
-Writes to neg_data
+#### critic (Prosecution)
+- Collects negative findings or controversies  
+- Writes to `neg_data`
 
 Parallel execution reduces bias and prevents sequential influence.
 
-judge
-Evaluates balance between pos_data and neg_data
+### judge
+- Evaluates balance between `pos_data` and `neg_data`  
+- Orders further research if insufficient  
+- Writes neutral analysis to `verdict`  
+- Must call `exit_loop` to end loop  
 
-Orders further research if insufficient
-
-Writes neutral analysis to verdict
-
-Must call exit_loop to end loop
-
-verdict_writer
+### verdict_writer
 Generates structured legal opinion:
 
-I. Background
-II. Issues
-III. Positive Findings
-IV. Negative Findings
-V. Legal Analysis
-VI. Verdict
+I. Background  
+II. Issues  
+III. Positive Findings  
+IV. Negative Findings  
+V. Legal Analysis  
+VI. Verdict  
 
-sentencing_agent
+### sentencing_agent
 Applies international criminal law frameworks:
 
-Rome Statute
-
-Geneva Conventions
-
-Crimes Against Humanity
-
-Genocide
-
-War Crimes
-
-Crime of Aggression
+- Rome Statute  
+- Geneva Conventions  
+- Crimes Against Humanity  
+- Genocide  
+- War Crimes  
+- Crime of Aggression  
 
 Produces:
 
-VII. International Legal Qualification
-VIII. Hypothetical Sentencing Outcome
+VII. International Legal Qualification  
+VIII. Hypothetical Sentencing Outcome  
 
-file_writer
+### file_writer
 Formats and saves the final A4-style report into:
 
+```
 historical_reports/<TOPIC>_Court_Report.txt
-4. State Management
+```
+
+---
+
+## 4. State Management
+
 The system uses explicit session state keys:
 
-Key	Purpose
-topic	User input
-pos_data	Positive findings
-neg_data	Negative findings
-verdict	Judge analysis
-verdict_body	Sections I–VI
-sentencing_body	Sections VII–VIII
-Design principles:
+| Key | Purpose |
+|------|----------|
+| topic | User input |
+| pos_data | Positive findings |
+| neg_data | Negative findings |
+| verdict | Judge analysis |
+| verdict_body | Sections I–VI |
+| sentencing_body | Sections VII–VIII |
 
-Single-owner write access
+### Design Principles
 
-Append-only for research data
+- Single-owner write access  
+- Append-only for research data  
+- Deterministic state propagation  
+- No cross-agent mutation  
 
-Deterministic state propagation
+---
 
-No cross-agent mutation
+## 5. Output Structure
 
-5. Output Structure
 Each execution produces a structured tribunal-style document:
 
+```
 THE HISTORICAL COURT
 INTERNATIONAL TRIBUNAL DIVISION
 
@@ -181,89 +173,103 @@ V. LEGAL ANALYSIS
 VI. VERDICT
 VII. INTERNATIONAL LEGAL QUALIFICATION
 VIII. HYPOTHETICAL SENTENCING OUTCOME
+```
+
 The output is:
 
-Balanced
+- Balanced  
+- Legally structured  
+- Deterministic  
+- Based strictly on collected evidence  
 
-Legally structured
+---
 
-Deterministic
+## 6. Technical Design Principles
 
-Based strictly on collected evidence
-
-6. Technical Design Principles
-Multi-Agent Orchestration
+### Multi-Agent Orchestration
 Root → Sequential → Loop → Parallel → Composition
 
-Deterministic Loop Control
-Loop terminates only via exit_loop
+### Deterministic Loop Control
+- Loop terminates only via `exit_loop`  
+- No natural-language termination allowed  
 
-No natural-language termination allowed
+### Parallel Adversarial Modeling
+- Defense and Prosecution operate independently  
+- Prevents bias  
 
-Parallel Adversarial Modeling
-Defense and Prosecution operate independently
+### Tool Restriction (Anti-Hallucination)
+- Explicit tool whitelist  
+- No delegation  
+- temperature = 0 for reproducibility  
 
-Prevents bias
-
-Tool Restriction (Anti-Hallucination)
-Explicit tool whitelist
-
-No delegation
-
-temperature = 0 for reproducibility
-
-Clean Responsibility Separation
+### Clean Responsibility Separation
 Each agent has a single responsibility:
+- Research  
+- Evaluation  
+- Drafting  
+- Legal qualification  
+- File output  
 
-Research
+---
 
-Evaluation
+## 7. How to Run
 
-Drafting
+### Install dependencies
 
-Legal qualification
-
-File output
-
-7. How to Run
-Install dependencies:
-
+```bash
 pip install google-adk python-dotenv google-cloud-logging langchain-community wikipedia
-Create .env:
+```
 
+### Create `.env`
+
+```
 MODEL=gemini-2.5-flash
 GOOGLE_API_KEY=your_api_key
-Run CLI:
+```
 
+### Run CLI
+
+```bash
 adk run TheHistoricalCourt
-Or Web UI:
+```
 
+### Run Web UI
+
+```bash
 adk web TheHistoricalCourt
-8. Grading Rubric Alignment
-Agent Structure
-✔ Root Agent
-✔ SequentialAgent
-✔ LoopAgent with exit_loop enforcement
-✔ ParallelAgent
-✔ Clear role separation
+```
 
-Output Completeness
-✔ Positive findings
-✔ Negative findings
-✔ Judicial analysis
-✔ International legal qualification
-✔ Hypothetical sentencing
-✔ Structured A4 legal format
+---
 
-Programming Technique
-✔ OOP-based modular design
-✔ Explicit state management
-✔ Deterministic execution control
-✔ Anti-hallucination safeguards
-✔ Clean separation of concerns
+## 8. Grading Rubric Alignment
 
-9. Conclusion
+### Agent Structure
+✔ Root Agent  
+✔ SequentialAgent  
+✔ LoopAgent with exit_loop enforcement  
+✔ ParallelAgent  
+✔ Clear role separation  
+
+### Output Completeness
+✔ Positive findings  
+✔ Negative findings  
+✔ Judicial analysis  
+✔ International legal qualification  
+✔ Hypothetical sentencing  
+✔ Structured A4 legal format  
+
+### Programming Technique
+✔ OOP-based modular design  
+✔ Explicit state management  
+✔ Deterministic execution control  
+✔ Anti-hallucination safeguards  
+✔ Clean separation of concerns  
+
+---
+
+## 9. Conclusion
+
 The Historical Court demonstrates a structured, reproducible, and well-architected multi-agent system that simulates an international tribunal process with controlled logic, balanced evidence, and formal legal reporting.
 
-Author:
+Author:  
 The Historical Court Simulation Engine
